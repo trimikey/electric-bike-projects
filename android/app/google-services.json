@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "983634614786",
+    "project_id": "electric-bike-7e0e3",
+    "storage_bucket": "electric-bike-7e0e3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:983634614786:android:02b193f7429dbb6980651b",
+        "android_client_info": {
+          "package_name": "com.example.test_windows_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC54Wp03vm6teGKzV4ITQq1Q5yXU6xA9X0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
