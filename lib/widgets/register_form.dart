@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:test_windows_app/services/auth_result.dart';
 import '../services/auth_service.dart';
 
 class RegisterForm extends StatefulWidget {
@@ -11,40 +12,51 @@ class RegisterForm extends StatefulWidget {
 class _RegisterFormState extends State<RegisterForm> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
-  final _phoneNumberController = TextEditingController();
+  final _phoneController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmController = TextEditingController();
-  final AuthService _authService = AuthService();
+  final _authService = AuthService();
 
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
   bool _isLoading = false;
 
-  void _submitRegister() async {
-    if (_formKey.currentState!.validate()) {
-      setState(() => _isLoading = true);
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _phoneController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmController.dispose();
+    super.dispose();
+  }
 
-      final success = await _authService.register(
-        _nameController.text,
-        _emailController.text,
-        _passwordController.text,
-        _phoneNumberController.text,
-      
+  Future<void> _submitRegister() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isLoading = true);
+
+    final AuthResult result = await _authService.register(
+      _nameController.text.trim(),
+      _emailController.text.trim(),
+      _passwordController.text,
+      _phoneController.text.trim(),
+    );
+
+    setState(() => _isLoading = false);
+
+    if (result.success) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(result.message ?? "Đăng ký thành công ✅")),
       );
-
-      setState(() => _isLoading = false);
-
-      if (success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Đăng ký thành công ✅")),
-        );
-        if (mounted) Navigator.pushReplacementNamed(context, "/home");
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Đăng ký thất bại ❌")),
-        );
-      }
+      Navigator.pushReplacementNamed(context, "/home");
+    } else {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(result.message ?? "Đăng ký thất bại ❌")),
+      );
     }
   }
 
@@ -65,8 +77,9 @@ class _RegisterFormState extends State<RegisterForm> {
                 val == null || val.isEmpty ? "Vui lòng nhập tên" : null,
           ),
           const SizedBox(height: 15),
+
           TextFormField(
-            controller: _phoneNumberController,
+            controller: _phoneController,
             decoration: const InputDecoration(
               labelText: "Số điện thoại",
               prefixIcon: Icon(Icons.phone),
@@ -75,6 +88,8 @@ class _RegisterFormState extends State<RegisterForm> {
             validator: (val) =>
                 val == null || val.isEmpty ? "Vui lòng nhập số điện thoại" : null,
           ),
+          const SizedBox(height: 15),
+
           TextFormField(
             controller: _emailController,
             decoration: const InputDecoration(
@@ -85,6 +100,7 @@ class _RegisterFormState extends State<RegisterForm> {
             validator: _authService.validateEmail,
           ),
           const SizedBox(height: 15),
+
           TextFormField(
             controller: _passwordController,
             obscureText: _obscurePassword,
@@ -103,6 +119,7 @@ class _RegisterFormState extends State<RegisterForm> {
             validator: _authService.validatePassword,
           ),
           const SizedBox(height: 15),
+
           TextFormField(
             controller: _confirmController,
             obscureText: _obscureConfirm,
@@ -125,12 +142,23 @@ class _RegisterFormState extends State<RegisterForm> {
             },
           ),
           const SizedBox(height: 20),
+
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
               onPressed: _isLoading ? null : _submitRegister,
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 14),
+              ),
               child: _isLoading
-                  ? const CircularProgressIndicator(color: Colors.white)
+                  ? const SizedBox(
+                      width: 22,
+                      height: 22,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
                   : const Text("Đăng ký"),
             ),
           ),

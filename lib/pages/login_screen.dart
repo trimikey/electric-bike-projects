@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:test_windows_app/services/auth_service.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -27,7 +28,11 @@ class LoginScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 // const Icon(Icons.electric_car, size: 80, color: Colors.blue),
-                Image.asset('lib/assets/Logo_xe_dien_EV.png', width: 80, height: 80),
+                Image.asset(
+                  'lib/assets/Logo_xe_dien_EV.png',
+                  width: 80,
+                  height: 80,
+                ),
                 const SizedBox(height: 16),
                 const Text(
                   "Đăng nhập",
@@ -112,6 +117,48 @@ class LoginScreen extends StatelessWidget {
                       child: const Text("Đăng ký tài khoản"),
                     ),
                   ],
+                ),
+
+
+
+                const SizedBox(height: 16),
+
+                OutlinedButton.icon(
+                  icon: Image.asset(
+                    'lib/assets/Google_logo.svg',
+                    width: 24,
+                    height: 24,
+                  ),
+                  label: const Text(
+                    "Đăng nhập với Google",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: Colors.grey), // viền xám
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 14,
+                      horizontal: 20,
+                    ),
+                    backgroundColor: Colors.white,
+                    foregroundColor: Colors.black87,
+                  ),
+                  
+                  onPressed: () async {
+                    final authService = AuthService();
+                    final user = await authService.signInWithGoogle();
+                    if (user != null) {
+                      Navigator.pushReplacementNamed(context, "/home");
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Đăng nhập Google thất bại"),
+                        ),
+                      );
+                    }
+                  },
                 ),
               ],
             ),
